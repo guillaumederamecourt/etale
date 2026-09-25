@@ -1,0 +1,274 @@
+:root {
+  --bg: #eef2f1;
+  --card: #ffffff;
+  --card2: #f5f8f7;
+  --line: #d3dddd;
+  --ink: #0f2430;
+  --muted: #52666f;
+  --accent: #0b6e8a;
+  --accent-ink: #ffffff;
+  --accent-soft: rgba(11, 110, 138, 0.1);
+  --gm: #e0a000;
+  --gm-ink: #1b1400;
+  --ok: #1e9a7a;
+  --ok-soft: #ddf1ea;
+  --ok-ink: #145f4c;
+  --s1: #cde9e1;
+  --s2: #7fcbb5;
+  --s3: #1e9a7a;
+  --bad: #c8483a;
+  --mid: #e0a000;
+  --radius: 14px;
+  --cond: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --tabbar: 64px;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0b1820;
+    --card: #11232d;
+    --card2: #0e1e27;
+    --line: #223a46;
+    --ink: #e3ecee;
+    --muted: #8fa3ab;
+    --accent: #4fb3cf;
+    --accent-ink: #06151c;
+    --accent-soft: rgba(79, 179, 207, 0.14);
+    --gm: #f5b82e;
+    --gm-ink: #1b1400;
+    --ok: #3cc79e;
+    --ok-soft: #173c35;
+    --ok-ink: #8fe3c8;
+    --s1: #1d4a43;
+    --s2: #2c8a72;
+    --s3: #3cc79e;
+    --bad: #e0685a;
+    --mid: #f5b82e;
+    color-scheme: dark;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--bg);
+}
+
+body {
+  color: var(--ink);
+  font: 15px/1.45 Barlow, 'Helvetica Neue', Arial, sans-serif;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  overflow-x: hidden;
+}
+
+button,
+input,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-family: var(--cond);
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+
+.label {
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.small {
+  font-size: 13px;
+}
+
+.cond {
+  font-family: var(--cond);
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+.row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.btn {
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+
+.btn.danger {
+  color: var(--bad);
+  border-color: var(--bad);
+  background: transparent;
+}
+
+.btn.solid-danger {
+  background: var(--bad);
+  border-color: var(--bad);
+  color: #fff;
+}
+
+.btn.ghost {
+  background: transparent;
+  border-color: transparent;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.icon-btn {
+  min-width: 44px;
+  min-height: 44px;
+  border: 0;
+  background: transparent;
+  border-radius: 10px;
+  display: inline-grid;
+  place-items: center;
+  padding: 0;
+  color: var(--muted);
+}
+
+.input {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid var(--line);
+  background: var(--card2);
+  border-radius: 10px;
+  padding: 0 12px;
+  font-size: 16px;
+}
+
+.msg {
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--card2);
+  border: 1px solid var(--line);
+  font-size: 14px;
+}
+
+.msg.err {
+  border-color: var(--bad);
+  color: var(--bad);
+}
+
+.coef {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 30px;
+  padding: 1px 6px;
+  border-radius: 6px;
+  font: 700 16px/1.25 var(--cond);
+  font-variant-numeric: tabular-nums;
+  border: 1px solid var(--line);
+}
+
+.coef.me {
+  color: var(--muted);
+}
+
+.coef.ve {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.coef.gm {
+  background: var(--gm);
+  border-color: var(--gm);
+  color: var(--gm-ink);
+}
+
+.agree {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--line);
+  flex: none;
+}
+
+.agree.hi {
+  background: var(--s3);
+}
+
+.agree.mid {
+  background: var(--mid);
+}
+
+.agree.lo {
+  background: var(--bad);
+}
+
+.skel {
+  border-radius: var(--radius);
+  background: linear-gradient(90deg, var(--card2), var(--line), var(--card2));
+  background-size: 200% 100%;
+  animation: sk 1.2s linear infinite;
+}
+
+@keyframes sk {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skel {
+    animation: none;
+  }
+}

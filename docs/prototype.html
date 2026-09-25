@@ -1,0 +1,582 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Ventmarée">
+<meta name="theme-color" content="#0B1820">
+<title>Ventmarée</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#EEF2F1; --panel:#FFFFFF; --panel2:#F6F9F8; --ink:#0F2430; --muted:#5B6F78; --line:#D3DDDD;
+  --accent:#0B6E8A; --accent-ink:#FFFFFF; --sig:#E0A000; --night:rgba(15,36,48,.07);
+  --s1:#CDE9E1; --s2:#7FCBB5; --s3:#1E9A7A; --bad:#C8483A;
+  --tide:#0B6E8A; --tide-fill:rgba(11,110,138,.14);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0B1820; --panel:#11232D; --panel2:#0E1E27; --ink:#E3ECEE; --muted:#8FA3AB;
+    --line:#223A46; --accent:#4FB3CF; --accent-ink:#06151C; --sig:#F5B82E; --night:rgba(0,0,0,.28);
+    --s1:#1D4A43; --s2:#2C8A72; --s3:#3CC79E; --bad:#E0685A;
+    --tide:#4FB3CF; --tide-fill:rgba(79,179,207,.16);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0B1820; --panel:#11232D; --panel2:#0E1E27; --ink:#E3ECEE; --muted:#8FA3AB;
+  --line:#223A46; --accent:#4FB3CF; --accent-ink:#06151C; --sig:#F5B82E; --night:rgba(0,0,0,.28);
+  --s1:#1D4A43; --s2:#2C8A72; --s3:#3CC79E; --bad:#E0685A;
+  --tide:#4FB3CF; --tide-fill:rgba(79,179,207,.16);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.45 Barlow,"Helvetica Neue",Arial,sans-serif;
+  padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}
+.wrap{max-width:1100px;margin:0 auto;padding-inline:16px;padding-block:14px 40px;display:grid;gap:16px}
+.cond{font-family:"Barlow Condensed","Arial Narrow",sans-serif}
+.num{font-variant-numeric:tabular-nums}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{display:flex;align-items:baseline;gap:10px}
+.brand h1{margin:0;font:700 28px/1 "Barlow Condensed","Arial Narrow",sans-serif;letter-spacing:.02em;text-transform:uppercase}
+.brand h1 span{color:var(--accent)}
+.brand small{color:var(--muted);font-size:13px}
+.spots{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:thin}
+.chip{border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:6px 14px;white-space:nowrap;display:flex;gap:6px;align-items:center}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip.add{border-style:dashed;color:var(--accent);border-color:var(--accent)}
+.chip .tag{font-size:11px;text-transform:uppercase;letter-spacing:.06em;opacity:.7}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px}
+.label{font-size:11.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600}
+.muted{color:var(--muted)}
+/* NOW */
+.now{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:18px;align-items:start}
+.now .spotname{grid-column:1/-1;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.now .spotname h2{margin:0;font:700 30px/1.05 "Barlow Condensed","Arial Narrow",sans-serif;text-wrap:balance}
+.big{font:700 44px/1 "Barlow Condensed","Arial Narrow",sans-serif;font-variant-numeric:tabular-nums;display:flex;align-items:baseline;gap:6px}
+.big small{font-size:18px;font-weight:600;color:var(--muted)}
+.stat{display:grid;gap:4px}
+.arrow{display:inline-block;transition:transform .3s}
+.pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:2px 10px;font-size:13px;font-weight:600;border:1px solid var(--line)}
+.pill.hi{background:var(--s3);color:#fff;border-color:transparent}
+.pill.mid{background:var(--s1);border-color:transparent}
+.pill.lo{background:transparent;color:var(--bad);border-color:var(--bad)}
+.coef{display:inline-flex;align-items:center;justify-content:center;min-width:34px;padding:1px 7px;border-radius:5px;font:700 16px/1.3 "Barlow Condensed",sans-serif;border:1px solid var(--line);font-variant-numeric:tabular-nums}
+.coef.me{color:var(--muted)}
+.coef.ve{border-color:var(--accent);color:var(--accent)}
+.coef.gm{background:var(--sig);border-color:var(--sig);color:#1b1400}
+.btn{border:1px solid var(--line);background:var(--panel2);border-radius:7px;padding:6px 12px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+.btn.danger{color:var(--bad);border-color:var(--bad);background:transparent}
+.btn.ghost{background:transparent}
+/* DAYS */
+.days{display:grid;grid-template-columns:repeat(7,minmax(118px,1fr));gap:8px;overflow-x:auto;padding-bottom:4px}
+.day{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:10px;text-align:left;display:grid;gap:6px;align-content:start}
+.day[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.day .d{display:flex;justify-content:space-between;align-items:baseline}
+.day .d b{font:700 18px/1 "Barlow Condensed",sans-serif;text-transform:capitalize}
+.bars{display:grid;grid-template-columns:repeat(17,1fr);gap:1px;height:10px}
+.bars i{border-radius:1px;background:var(--line)}
+.bars i.s1{background:var(--s1)}.bars i.s2{background:var(--s2)}.bars i.s3{background:var(--s3)}
+.bars i.n{opacity:.35}
+.day .w{font:600 15px/1.2 "Barlow Condensed",sans-serif}
+.day .win{font-size:12.5px;color:var(--muted)}
+.day .win b{color:var(--s3)}
+/* TIDE */
+.tidehead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+.tidehead h3,.sechead h3{margin:0;font:700 20px/1.1 "Barlow Condensed",sans-serif;text-transform:uppercase;letter-spacing:.03em}
+.tidesvg{width:100%;height:auto;display:block}
+.tidesvg text{fill:var(--ink);font:600 13px "Barlow Condensed",sans-serif}
+.tidesvg .ax{fill:var(--muted);font-weight:500;font-size:12px}
+.tidesvg .ln{stroke:var(--line)}
+.tidesvg .curve{stroke:var(--tide);fill:none;stroke-width:2.2}
+.tidesvg .area{fill:var(--tide-fill)}
+.tidesvg .night{fill:var(--night)}
+.tidesvg .nowl{stroke:var(--sig);stroke-width:2}
+.tidesvg .pt{fill:var(--panel);stroke:var(--tide);stroke-width:2}
+.extremes{display:flex;gap:14px;flex-wrap:wrap;font-size:14px}
+.extremes span b{font-family:"Barlow Condensed",sans-serif;font-size:17px}
+/* TABLE */
+.sechead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px}
+table.fc{border-collapse:separate;border-spacing:0;min-width:100%;font-variant-numeric:tabular-nums}
+table.fc th,table.fc td{padding:5px 2px;text-align:center;min-width:42px;font-size:14px;border-bottom:1px solid var(--line)}
+table.fc th:first-child,table.fc td:first-child{position:sticky;left:0;background:var(--panel);text-align:left;padding-inline:10px 8px;min-width:112px;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-weight:600;z-index:1;border-right:1px solid var(--line)}
+table.fc thead th{font:700 15px "Barlow Condensed",sans-serif;background:var(--panel2)}
+table.fc thead th:first-child{background:var(--panel2)}
+table.fc tr:last-child td{border-bottom:0}
+td.wc{font:700 16px "Barlow Condensed",sans-serif}
+td.nt{opacity:.45}
+tr.model td{font-size:13px;color:var(--muted)}
+tr.model td:first-child{text-transform:none;letter-spacing:0;font-weight:500}
+.dots{display:inline-flex;gap:2px}
+.dots i{width:7px;height:7px;border-radius:50%;background:var(--line)}
+.dots i.on{background:var(--s3)}
+.agree{display:inline-block;width:10px;height:10px;border-radius:50%}
+.agree.hi{background:var(--s3)}.agree.mid{background:var(--sig)}.agree.lo{background:var(--bad)}
+.legend{display:flex;gap:4px;align-items:center;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.legend i{display:inline-block;width:26px;height:12px;border-radius:2px}
+/* EDITOR */
+.editor{display:grid;gap:14px}
+.editor .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.field{display:grid;gap:4px}
+.field input,.field select{border:1px solid var(--line);background:var(--panel2);border-radius:7px;padding:7px 9px;width:100%}
+.compass{position:relative;width:230px;height:230px;margin:6px auto;border-radius:50%;border:1px dashed var(--line)}
+.compass button{position:absolute;width:40px;height:30px;margin:-15px 0 0 -20px;border-radius:6px;border:1px solid var(--line);background:var(--panel2);font:600 13px "Barlow Condensed",sans-serif;padding:0}
+.compass button[aria-pressed="true"]{background:var(--s3);border-color:var(--s3);color:#fff}
+.compass .c{position:absolute;inset:0;display:grid;place-items:center;text-align:center;font-size:12px;color:var(--muted);padding:60px;pointer-events:none}
+.results{display:grid;gap:6px}
+.results button{text-align:left;border:1px solid var(--line);background:var(--panel2);border-radius:7px;padding:8px 10px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.msg{padding:10px 12px;border-radius:8px;background:var(--panel2);border:1px solid var(--line);font-size:14px}
+.msg.err{border-color:var(--bad);color:var(--bad)}
+footer{font-size:13px;color:var(--muted);display:grid;gap:6px;max-width:75ch}
+footer a{color:var(--accent)}
+.skel{height:120px;border-radius:8px;background:linear-gradient(90deg,var(--panel2),var(--line),var(--panel2));background-size:200% 100%;animation:sk 1.2s linear infinite}
+@keyframes sk{to{background-position:-200% 0}}
+@media (prefers-reduced-motion:reduce){.skel{animation:none}.arrow{transition:none}}
+@media (max-width:520px){.big{font-size:38px}.now .spotname h2{font-size:26px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><h1>Vent<span>marée</span></h1><small>vent multi-modèles · vagues · marée &amp; coefficient</small></div>
+    <div class="row"><button class="btn ghost" id="refresh" type="button">Actualiser</button></div>
+  </header>
+
+  <nav class="spots" id="spots" aria-label="Mes spots"></nav>
+
+  <section id="editor" class="panel" hidden></section>
+
+  <section class="panel now" id="now"><div class="skel" style="grid-column:1/-1"></div></section>
+
+  <section class="days" id="days" aria-label="Prévisions 7 jours"></section>
+
+  <section class="panel" id="tide"></section>
+
+  <section class="panel" id="table"></section>
+
+  <footer>
+    <div><b>Sources.</b> Vent : Météo-France AROME/ARPEGE, DWD ICON, ECMWF IFS, Met Office UKMO, NOAA GFS, via <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a>. La ligne « Vent » affiche la médiane des modèles disponibles ; la pastille « Accord » mesure l'écart entre modèles (vert ≤ 4 nd, jaune ≤ 8 nd, rouge au-delà).</div>
+    <div>Vagues et houle : modèles MFWAM (Météo-France), ECMWF WAM et DWD, via Open-Meteo Marine. Marée : niveau d'eau modélisé (Open-Meteo), hauteurs par rapport au niveau moyen, pas au zéro des cartes.</div>
+    <div>Coefficient : calculé à partir du marnage modélisé à Brest, calibré sur l'annuaire SHOM (écart typique ± 3). Les horaires de marée du modèle peuvent décaler de 30 à 60 min par rapport à l'annuaire officiel : règle la « correction horaire » de chaque spot en comparant une fois avec <a href="https://maree.info" target="_blank" rel="noopener">maree.info</a> ou <a href="https://maree.shom.fr" target="_blank" rel="noopener">maree.shom.fr</a>. Ne remplace pas les sources officielles pour la navigation.</div>
+  </footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+const API='https://api.open-meteo.com/v1/forecast';
+const MARINE='https://marine-api.open-meteo.com/v1/marine';
+const GEO='https://geocoding-api.open-meteo.com/v1/search';
+const BREST={lat:48.38,lon:-4.5};
+const BREST_SHIFT=50;      // minutes : décalage du modèle vs annuaire SHOM à Brest
+const COEF_K=16.85;         // coefficient ≈ K × marnage modélisé (m), calibré sur SHOM sept. 2026
+const MODELS=[
+  {id:'meteofrance_seamless',label:'AROME / ARPEGE',src:'Météo-France'},
+  {id:'icon_seamless',label:'ICON',src:'DWD'},
+  {id:'ecmwf_ifs025',label:'IFS',src:'ECMWF'},
+  {id:'ukmo_seamless',label:'UKMO',src:'Met Office'},
+  {id:'gfs_seamless',label:'GFS',src:'NOAA'}
+];
+const DIRS=['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSO','SO','OSO','O','ONO','NO','NNO'];
+const SPORTS={kite:{label:'Kitesurf',wmin:12,wmax:30,wave:0},wing:{label:'Wingfoil',wmin:14,wmax:30,wave:0},surf:{label:'Surf',wmin:0,wmax:14,wave:0.8}};
+const TIDEPREF={all:'Toutes marées',high:'Autour de la pleine mer',low:'Autour de la basse mer',mid:'Mi-marée',rising:'Marée montante',falling:'Marée descendante'};
+const H0=6,H1=22;
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},
+          set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}},
+          del(k){try{localStorage.removeItem(k)}catch(e){}}};
+const tm=s=>Date.parse(s.slice(0,16)+':00Z')/60000;
+const ts=m=>new Date(m*60000).toISOString().slice(0,16);
+const hhmm=m=>ts(m).slice(11,16).replace(':','h');
+const sector=d=>Math.round((((d%360)+360)%360)/22.5)%16;
+const median=a=>{const b=a.filter(v=>v!=null).sort((x,y)=>x-y);if(!b.length)return null;const m=b.length>>1;return b.length%2?b[m]:(b[m-1]+b[m])/2};
+const r0=v=>v==null?'–':Math.round(v);
+const r1=v=>v==null?'–':(Math.round(v*10)/10).toFixed(1);
+const arrow=(d,size=16)=>d==null?'':`<span class="arrow" style="transform:rotate(${Math.round(d+180)}deg);font-size:${size}px" aria-hidden="true">↑</span>`;
+const dayName=d=>new Date(d+'T12:00:00Z').toLocaleDateString('fr-FR',{weekday:'short',timeZone:'UTC'}).replace('.','');
+const dayLong=d=>new Date(d+'T12:00:00Z').toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',timeZone:'UTC'});
+
+/* ---- couleurs vent (nœuds) ---- */
+const WSTOPS=[[0,[232,241,246]],[6,[190,224,240]],[10,[134,212,196]],[14,[150,214,105]],[18,[236,217,76]],[22,[243,168,62]],[27,[232,96,58]],[33,[196,58,120]],[42,[122,63,160]]];
+function wcolor(v){if(v==null)return['transparent','inherit'];let i=0;while(i<WSTOPS.length-2&&v>WSTOPS[i+1][0])i++;const[a,ca]=WSTOPS[i],[b,cb]=WSTOPS[i+1];const t=Math.max(0,Math.min(1,(v-a)/(b-a)));const c=ca.map((x,j)=>Math.round(x+(cb[j]-x)*t));return[`rgb(${c})`,v>=27?'#fff':'#10222c']}
+
+/* ---- spots ---- */
+const DEFAULT_SPOTS=[
+  {id:'torche',name:'La Torche (exemple)',lat:47.838,lon:-4.350,sport:'kite',wmin:12,wmax:30,wave:0,sectors:[9,10,11,12,13,14],tidePref:'all',corr:0},
+  {id:'penthievre',name:'Penthièvre (exemple)',lat:47.535,lon:-3.150,sport:'surf',wmin:0,wmax:14,wave:0.8,sectors:[1,2,3,4,5],tidePref:'mid',corr:0}
+];
+let spots=LS.get('vm.spots',null)||DEFAULT_SPOTS.map(s=>({...s}));
+let curId=LS.get('vm.cur',spots[0]&&spots[0].id);
+let selDay=null, showModels=LS.get('vm.models',false), data=null, editing=null, delArmed=false;
+const saveSpots=()=>LS.set('vm.spots',spots);
+const cur=()=>spots.find(s=>s.id===curId)||spots[0];
+
+/* ---- cache & fetch ---- */
+(function prune(){try{const now=Date.now();for(let i=localStorage.length-1;i>=0;i--){const k=localStorage.key(i);if(k&&k.startsWith('c:')){const v=JSON.parse(localStorage.getItem(k));if(!v||now-v.t>3*3600e3)localStorage.removeItem(k)}}}catch(e){}})();
+async function getJSON(url,ttl=30,force=false){
+  const c=LS.get('c:'+url,null);
+  if(!force&&c&&Date.now()-c.t<ttl*60000)return c.d;
+  const r=await fetch(url);
+  let d; try{d=await r.json()}catch(e){throw new Error('Réponse illisible ('+r.status+')')}
+  if(!r.ok||d.error)throw new Error(d.reason||('Erreur '+r.status));
+  LS.set('c:'+url,{t:Date.now(),d});
+  return d;
+}
+
+async function loadWind(s,force){
+  const u=`${API}?latitude=${s.lat}&longitude=${s.lon}&hourly=wind_speed_10m,wind_gusts_10m,wind_direction_10m&models=${MODELS.map(m=>m.id).join(',')}&wind_speed_unit=kn&forecast_days=7&timezone=auto`;
+  return getJSON(u,30,force);
+}
+async function loadSun(s,force){
+  return getJSON(`${API}?latitude=${s.lat}&longitude=${s.lon}&daily=sunrise,sunset&forecast_days=7&timezone=auto`,360,force);
+}
+async function loadMarine(s,force){
+  const offs=[[0,0],[0,-.05],[-.05,0],[.05,0],[0,.05],[-.05,-.05],[.05,-.05],[0,-.1],[-.1,0],[.1,0],[0,.1],[-.1,-.1],[.1,-.1],[-.1,.1],[.1,.1],[0,-.2],[-.2,0],[.2,0],[0,.2]];
+  const list=s.mOff?[s.mOff,...offs]:offs;
+  for(const[dy,dx]of list){
+    const lat=(s.lat+dy).toFixed(3),lon=(s.lon+dx).toFixed(3);
+    const u=`${MARINE}?latitude=${lat}&longitude=${lon}&hourly=wave_height,wave_period,wave_direction,swell_wave_height,swell_wave_period,swell_wave_direction,sea_level_height_msl&minutely_15=sea_level_height_msl&timezone=auto&past_days=1&forecast_days=7`;
+    const d=await getJSON(u,60,force);
+    if(d.hourly&&d.hourly.wave_height&&d.hourly.wave_height.some(v=>v!=null)){
+      if(!s.mOff||s.mOff[0]!==dy||s.mOff[1]!==dx){s.mOff=[dy,dx];saveSpots()}
+      d._at=[+lat,+lon];return d;
+    }
+  }
+  return null;
+}
+async function loadBrest(force){
+  return getJSON(`${MARINE}?latitude=${BREST.lat}&longitude=${BREST.lon}&minutely_15=sea_level_height_msl&hourly=sea_level_height_msl&timezone=Europe/Paris&past_days=1&forecast_days=8`,120,force);
+}
+
+/* ---- marée ---- */
+function seaSeries(d){
+  const m=d.minutely_15;
+  if(m&&m.sea_level_height_msl&&m.sea_level_height_msl.some(v=>v!=null))return{T:m.time.map(tm),V:m.sea_level_height_msl,step:15};
+  const h=d.hourly;
+  if(h&&h.sea_level_height_msl&&h.sea_level_height_msl.some(v=>v!=null))return{T:h.time.map(tm),V:h.sea_level_height_msl,step:60};
+  return null;
+}
+function extremes(S){
+  const W=Math.max(1,Math.round(100/S.step)),V=S.V,out=[];
+  for(let i=1;i<V.length-1;i++){
+    const v=V[i];if(v==null||V[i-1]==null||V[i+1]==null)continue;
+    let isMax=true,isMin=true;
+    for(let j=Math.max(0,i-W);j<=Math.min(V.length-1,i+W);j++){if(j===i||V[j]==null)continue;if(V[j]>v)isMax=false;if(V[j]<v)isMin=false}
+    if(!isMax&&!isMin)continue;
+    if(isMax&&V[i-1]===v)continue; if(isMin&&V[i-1]===v)continue;
+    const a=V[i-1],c=V[i+1],den=a-2*v+c;let off=den?0.5*(a-c)/den:0;off=Math.max(-1,Math.min(1,off));
+    const peak=v-0.25*(a-c)*off, type=isMax?'PM':'BM';
+    const prev=out[out.length-1];
+    if(prev&&prev.type===type&&S.T[i]-prev.t<180){if((type==='PM')===(peak>prev.v)){out[out.length-1]={type,t:S.T[i]+off*S.step,v:peak}}continue}
+    out.push({type,t:S.T[i]+off*S.step,v:peak});
+  }
+  return out;
+}
+function brestCoefs(d){
+  const S=seaSeries(d);if(!S)return{};
+  const ex=extremes(S),out={};
+  ex.forEach((e,i)=>{
+    if(e.type!=='PM')return;
+    const lows=[ex[i-1],ex[i+1]].filter(x=>x&&x.type==='BM');if(!lows.length)return;
+    const range=e.v-lows.reduce((a,b)=>a+b.v,0)/lows.length;
+    const c=Math.max(20,Math.min(120,Math.round(COEF_K*range)));
+    const day=ts(e.t+BREST_SHIFT).slice(0,10);
+    (out[day]=out[day]||[]).push({c,t:e.t+BREST_SHIFT});
+  });
+  return out;
+}
+function coefClass(c){return c>=95?'gm':c>=70?'ve':c<45?'me':''}
+function coefLabel(c){return c>=95?'grande marée':c>=70?'vive-eau':c<45?'morte-eau':'marée moyenne'}
+function levelAt(S,t){ // t en minutes locales
+  if(!S)return null;const i=Math.floor((t-S.T[0])/S.step);if(i<0||i>=S.V.length-1)return null;
+  const a=S.V[i],b=S.V[i+1];if(a==null||b==null)return null;return a+(b-a)*((t-S.T[i])/S.step);
+}
+function tidePhase(ex,t){
+  let prev=null,next=null;for(const e of ex){if(e.t<=t)prev=e;else{next=e;break}}
+  if(!prev||!next)return null;
+  const rising=next.type==='PM';
+  const dPM=Math.min(...[prev,next].filter(e=>e.type==='PM').map(e=>Math.abs(e.t-t)));
+  const dBM=Math.min(...[prev,next].filter(e=>e.type==='BM').map(e=>Math.abs(e.t-t)));
+  return{rising,nearHigh:dPM<=120,nearLow:dBM<=120,mid:dPM>120&&dBM>120,prev,next};
+}
+function tideOk(pref,ph){
+  if(!ph||pref==='all')return true;
+  return pref==='high'?ph.nearHigh:pref==='low'?ph.nearLow:pref==='mid'?ph.mid:pref==='rising'?ph.rising:!ph.rising;
+}
+
+/* ---- assemblage ---- */
+function build(s,wind,sun,marine,brest){
+  const h=wind.hourly,hours=[];
+  const mIdx={};if(marine)marine.hourly.time.forEach((t,i)=>mIdx[t]=i);
+  const S=marine?seaSeries(marine):null;
+  const corr=+s.corr||0;
+  const Sx=S?{...S,T:S.T.map(t=>t+corr)}:null;
+  const ex=Sx?extremes(Sx):[];
+  const sunMap={};sun.daily.time.forEach((d,i)=>sunMap[d]=[tm(sun.daily.sunrise[i]),tm(sun.daily.sunset[i])]);
+  h.time.forEach((t,i)=>{
+    const models={};const sp=[],gu=[];let vx=0,vy=0;
+    MODELS.forEach(m=>{
+      const w=h['wind_speed_10m_'+m.id]?.[i],g=h['wind_gusts_10m_'+m.id]?.[i],d=h['wind_direction_10m_'+m.id]?.[i];
+      models[m.id]={w,g,d};
+      if(w!=null){sp.push(w);if(g!=null)gu.push(g);if(d!=null){const r=d*Math.PI/180;vx+=Math.sin(r)*Math.max(w,1);vy+=Math.cos(r)*Math.max(w,1)}}
+    });
+    const w=median(sp),g=median(gu);
+    const d=sp.length?((Math.atan2(vx,vy)*180/Math.PI)+360)%360:null;
+    const spread=sp.length>1?Math.max(...sp)-Math.min(...sp):null;
+    const mi=mIdx[t];const mh=marine&&mi!=null?marine.hourly:null;
+    const T=tm(t),day=t.slice(0,10),sn=sunMap[day];
+    const o={t:T,key:t,day,hour:+t.slice(11,13),models,w,g,d,spread,n:sp.length,
+      wave:mh?mh.wave_height[mi]:null,per:mh?mh.wave_period[mi]:null,wdir:mh?mh.wave_direction[mi]:null,
+      swell:mh?mh.swell_wave_height[mi]:null,sper:mh?mh.swell_wave_period[mi]:null,sdir:mh?mh.swell_wave_direction[mi]:null,
+      lvl:levelAt(Sx,T),phase:tidePhase(ex,T),
+      daylight:sn?(T>=sn[0]-30&&T<=sn[1]+30):true};
+    o.score=score(s,o);
+    hours.push(o);
+  });
+  return{hours,ex,S:Sx,sun:sunMap,days:sun.daily.time,coefs:brest?brestCoefs(brest):{},marineAt:marine&&marine._at,utc:wind.utc_offset_seconds||0};
+}
+function score(s,o){
+  if(!o.daylight||o.w==null)return 0;
+  const dirOk=!s.sectors||!s.sectors.length||o.d==null||s.sectors.includes(sector(o.d));
+  let sc;
+  if(s.sport==='surf'){
+    if(o.wave==null||o.wave<(+s.wave||0))return 0;
+    sc=1;
+    if((o.per||0)>=9)sc++;
+    if(o.w<=8||(dirOk&&o.w<=(+s.wmax||20)))sc++;
+    else if(o.w>15)sc--;
+  }else{
+    if(o.w<s.wmin||o.w>s.wmax||!dirOk)return 0;
+    sc=1;
+    if(o.w>=s.wmin+3&&o.w<=s.wmax-3)sc++;
+    if(o.g==null||o.g-o.w<=10)sc++;
+  }
+  if(!tideOk(s.tidePref,o.phase))sc--;
+  return Math.max(0,Math.min(3,sc));
+}
+function bestWindow(hs){
+  let best=null,run=null;
+  hs.forEach(o=>{if(o.score>=2){if(!run)run={a:o.hour,b:o.hour,sum:0};run.b=o.hour;run.sum+=o.score}else if(run){if(!best||run.sum>best.sum)best=run;run=null}});
+  if(run&&(!best||run.sum>best.sum))best=run;return best;
+}
+function agreeCls(sp){return sp==null?'':sp<=4?'hi':sp<=8?'mid':'lo'}
+
+/* ---- rendu ---- */
+function renderSpots(){
+  $('#spots').innerHTML=spots.map(s=>`<button class="chip" type="button" data-id="${esc(s.id)}" aria-pressed="${s.id===curId}"><span>${esc(s.name)}</span><span class="tag">${SPORTS[s.sport]?.label||''}</span></button>`).join('')+
+    `<button class="chip add" type="button" id="addspot">+ Ajouter un spot</button>`;
+}
+function nowKey(){const d=new Date(Date.now()+data.utc*1000);return d.toISOString().slice(0,13)+':00'}
+function renderNow(s){
+  const n=data.hours.find(o=>o.key===nowKey())||data.hours[0];
+  const today=n.day, cf=data.coefs[today]||[];
+  const ph=n.phase;
+  const dayHours=data.hours.filter(o=>o.day===today&&o.hour>=H0&&o.hour<=H1);
+  const bw=bestWindow(dayHours);
+  const ag=agreeCls(n.spread);
+  const [bg,fg]=wcolor(n.w);
+  $('#now').innerHTML=`
+  <div class="spotname">
+    <div><div class="label">Maintenant · ${hhmm(n.t)}</div><h2>${esc(s.name)}</h2>
+      <div class="muted" style="font-size:13px">${SPORTS[s.sport].label} · ${s.sport==='surf'?'vagues ≥ '+s.wave+' m':s.wmin+'–'+s.wmax+' nd'} · ${s.sectors?.length?s.sectors.map(i=>DIRS[i]).join(' '):'toutes directions'} · ${TIDEPREF[s.tidePref]||''}</div></div>
+    <div class="row"><button class="btn" type="button" id="editspot">Réglages du spot</button></div>
+  </div>
+  <div class="stat"><div class="label">Vent (médiane ${n.n} modèles)</div>
+    <div class="big"><span style="background:${bg};color:${fg};border-radius:6px;padding:0 8px">${r0(n.w)}</span><small>nd</small>${arrow(n.d,30)}<small>${n.d!=null?DIRS[sector(n.d)]:''}</small></div>
+    <div>Rafales <b class="num">${r0(n.g)} nd</b> · ${n.spread!=null?`<span class="pill ${ag}">Accord modèles ${ag==='hi'?'bon':ag==='mid'?'moyen':'faible'} (±${r0(n.spread/2)} nd)</span>`:''}</div></div>
+  <div class="stat"><div class="label">Vagues</div>
+    <div class="big">${r1(n.wave)}<small>m</small>${n.per!=null?`<small>${r0(n.per)} s</small>`:''}</div>
+    <div>Houle <b class="num">${r1(n.swell)} m · ${r0(n.sper)} s</b> ${arrow(n.sdir)} ${n.sdir!=null?DIRS[sector(n.sdir)]:''}</div></div>
+  <div class="stat"><div class="label">Marée</div>
+    <div class="big">${ph?(ph.rising?'Montante':'Descendante'):'–'}</div>
+    <div>${ph?`${ph.next.type==='PM'?'Pleine mer':'Basse mer'} à <b>${hhmm(ph.next.t)}</b>`:'Données de marée indisponibles'}</div></div>
+  <div class="stat"><div class="label">Coefficient du jour</div>
+    <div class="row" style="gap:6px;margin-top:4px">${cf.length?cf.map(x=>`<span class="coef ${coefClass(x.c)}" style="font-size:24px;min-width:48px">${x.c}</span>`).join(''):'<span class="muted">–</span>'}</div>
+    <div class="muted" style="font-size:13px">${cf.length?coefLabel(Math.max(...cf.map(x=>x.c))):''}</div></div>
+  <div class="stat"><div class="label">Meilleur créneau aujourd'hui</div>
+    <div class="big" style="font-size:32px">${bw?`${bw.a}h–${bw.b+1}h`:'<span class="muted" style="font-size:22px">Aucun</span>'}</div>
+    <div class="muted" style="font-size:13px">selon tes réglages de spot</div></div>`;
+}
+function renderDays(){
+  $('#days').innerHTML=data.days.map(d=>{
+    const hs=data.hours.filter(o=>o.day===d&&o.hour>=H0&&o.hour<=H1);
+    const day=hs.filter(o=>o.daylight);
+    const mx=day.reduce((a,o)=>o.w!=null&&(!a||o.w>a.w)?o:a,null);
+    const bw=bestWindow(hs);
+    const cf=data.coefs[d]||[];
+    return `<button class="day" type="button" data-day="${d}" aria-pressed="${d===selDay}">
+      <div class="d"><b>${dayName(d)} ${+d.slice(8)}</b><span>${cf.map(x=>`<span class="coef ${coefClass(x.c)}" style="font-size:13px;min-width:26px;padding:0 4px">${x.c}</span>`).join(' ')}</span></div>
+      <div class="bars" aria-hidden="true">${hs.map(o=>`<i class="s${o.score}${o.daylight?'':' n'}"></i>`).join('')}</div>
+      <div class="w">${mx?`${r0(mx.w)} nd max ${arrow(mx.d,13)} ${DIRS[sector(mx.d)]}`:'–'}</div>
+      <div class="win">${bw?`Créneau <b>${bw.a}h–${bw.b+1}h</b>`:'Pas de créneau'}</div>
+    </button>`}).join('');
+}
+function renderTide(){
+  const el=$('#tide');const S=data.S;
+  if(!S){el.innerHTML=`<div class="tidehead"><h3>Marée</h3></div><div class="msg">Pas de données de niveau d'eau pour ce point. Déplace légèrement les coordonnées du spot vers la mer.</div>`;return}
+  const t0=tm(selDay+'T00:00'),t1=t0+1440;
+  const Wd=960,Ht=170,pl=34,pr=10,pt=26,pb=22;
+  const vals=S.V.filter(v=>v!=null),lo=Math.min(...vals),hi=Math.max(...vals);
+  const x=t=>pl+(t-t0)/1440*(Wd-pl-pr),y=v=>pt+(hi-v)/(hi-lo||1)*(Ht-pt-pb);
+  const pts=[];for(let i=0;i<S.T.length;i++){if(S.T[i]<t0-15||S.T[i]>t1+15||S.V[i]==null)continue;pts.push([x(Math.max(t0,Math.min(t1,S.T[i]))),y(S.V[i])])}
+  const line=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join('');
+  const area=pts.length?line+`L${pts[pts.length-1][0].toFixed(1)} ${Ht-pb}L${pts[0][0].toFixed(1)} ${Ht-pb}Z`:'';
+  const sn=data.sun[selDay];
+  let night='';if(sn){night=`<rect class="night" x="${x(t0)}" y="${pt-6}" width="${x(sn[0])-x(t0)}" height="${Ht-pb-pt+6}"/><rect class="night" x="${x(sn[1])}" y="${pt-6}" width="${x(t1)-x(sn[1])}" height="${Ht-pb-pt+6}"/>`}
+  let ticks='';for(let h=0;h<=24;h+=3){const X=x(t0+h*60);ticks+=`<line class="ln" x1="${X}" x2="${X}" y1="${pt-6}" y2="${Ht-pb}"/><text class="ax" x="${X}" y="${Ht-5}" text-anchor="middle">${h}h</text>`}
+  const zero=`<line class="ln" x1="${pl}" x2="${Wd-pr}" y1="${y(0)}" y2="${y(0)}" stroke-dasharray="3 4"/><text class="ax" x="${pl-4}" y="${y(0)+4}" text-anchor="end">0</text><text class="ax" x="${pl-4}" y="${y(hi)+4}" text-anchor="end">${r1(hi)}</text><text class="ax" x="${pl-4}" y="${y(lo)+4}" text-anchor="end">${r1(lo)}</text>`;
+  const exs=data.ex.filter(e=>e.t>=t0&&e.t<t1);
+  const marks=exs.map(e=>{const X=x(e.t),Y=y(e.v);const up=e.type==='PM';return `<circle class="pt" cx="${X}" cy="${Y}" r="4"/><text x="${Math.min(Wd-40,Math.max(pl+30,X))}" y="${up?Y-8:Y+(Y+18>Ht-pb?-8:18)}" text-anchor="middle">${e.type} ${hhmm(e.t)}</text>`}).join('');
+  const nowT=tm(nowKey())+new Date().getUTCMinutes();
+  const nowL=(nowT>=t0&&nowT<t1)?`<line class="nowl" x1="${x(nowT)}" x2="${x(nowT)}" y1="${pt-6}" y2="${Ht-pb}"/>`:'';
+  const cf=data.coefs[selDay]||[];
+  const pm=exs.filter(e=>e.type==='PM'),bm=exs.filter(e=>e.type==='BM');
+  const marn=pm.length&&bm.length?Math.max(...pm.map(e=>e.v))-Math.min(...bm.map(e=>e.v)):null;
+  el.innerHTML=`<div class="tidehead"><h3>Marée · ${dayLong(selDay)}</h3>
+    <div class="row">${cf.map(c=>`<span class="coef ${coefClass(c.c)}">${c.c}</span>`).join('')}<span class="muted" style="font-size:13px">${cf.length?coefLabel(Math.max(...cf.map(c=>c.c))):''}</span></div></div>
+    <div style="overflow-x:auto"><svg class="tidesvg" viewBox="0 0 ${Wd} ${Ht}" role="img" aria-label="Courbe de marée">${night}${ticks}${zero}<path class="area" d="${area}"/><path class="curve" d="${line}"/>${nowL}${marks}</svg></div>
+    <div class="extremes">${exs.map(e=>`<span>${e.type==='PM'?'Pleine mer':'Basse mer'} <b>${hhmm(e.t)}</b> <span class="muted">${e.v>0?'+':''}${r1(e.v)} m</span></span>`).join('')}${marn!=null?`<span class="muted">Marnage ≈ ${r1(marn)} m</span>`:''}</div>
+    <div class="muted" style="font-size:12.5px;margin-top:6px">Hauteurs par rapport au niveau moyen · point modèle ${data.marineAt?data.marineAt.map(v=>v.toFixed(2)).join(', '):''}${cur().corr?` · correction horaire ${cur().corr>0?'+':''}${cur().corr} min`:''}</div>`;
+}
+function renderTable(){
+  const s=cur();
+  const hs=data.hours.filter(o=>o.day===selDay&&o.hour>=H0&&o.hour<=H1);
+  const td=(o,html,extra='')=>`<td class="${o.daylight?'':'nt'} ${extra}">${html}</td>`;
+  const wcell=(o,v)=>{const[bg,fg]=wcolor(v);return `<td class="wc ${o.daylight?'':'nt'}" style="background:${bg};color:${fg}">${r0(v)}</td>`};
+  let rows='';
+  rows+=`<tr><td>Note</td>${hs.map(o=>td(o,`<span class="dots" title="${o.score}/3">${[1,2,3].map(k=>`<i class="${o.score>=k?'on':''}"></i>`).join('')}</span>`)).join('')}</tr>`;
+  rows+=`<tr><td>Vent (nd)</td>${hs.map(o=>wcell(o,o.w)).join('')}</tr>`;
+  rows+=`<tr><td>Rafales (nd)</td>${hs.map(o=>wcell(o,o.g)).join('')}</tr>`;
+  rows+=`<tr><td>Direction</td>${hs.map(o=>td(o,`${arrow(o.d)}<div style="font-size:11px">${o.d!=null?DIRS[sector(o.d)]:''}</div>`)).join('')}</tr>`;
+  rows+=`<tr><td>Accord</td>${hs.map(o=>td(o,`<span class="agree ${agreeCls(o.spread)}" title="écart ${r0(o.spread)} nd"></span>`)).join('')}</tr>`;
+  if(showModels)MODELS.forEach(m=>{rows+=`<tr class="model"><td>${m.label} <span style="opacity:.7">${m.src}</span></td>${hs.map(o=>{const v=o.models[m.id];return td(o,v.w==null?'–':`${r0(v.w)}<span style="opacity:.6">/${r0(v.g)}</span>`)}).join('')}</tr>`});
+  rows+=`<tr><td>Vagues (m)</td>${hs.map(o=>td(o,`<b>${r1(o.wave)}</b>`)).join('')}</tr>`;
+  rows+=`<tr><td>Période (s)</td>${hs.map(o=>td(o,r0(o.per))).join('')}</tr>`;
+  rows+=`<tr><td>Houle</td>${hs.map(o=>td(o,`${r1(o.swell)}<div>${arrow(o.sdir,13)}</div>`)).join('')}</tr>`;
+  rows+=`<tr><td>Marée (m)</td>${hs.map(o=>td(o,`${o.lvl==null?'–':(o.lvl>0?'+':'')+r1(o.lvl)}<div style="font-size:11px;color:var(--muted)">${o.phase?(o.phase.rising?'▲':'▼'):''}</div>`)).join('')}</tr>`;
+  $('#table').innerHTML=`<div class="sechead"><h3>Heure par heure</h3>
+    <div class="row"><div class="legend">${[5,10,15,20,25,30,35].map(v=>{const[bg]=wcolor(v);return `<i style="background:${bg}" title="${v} nd"></i>`}).join('')}<span>5 → 35 nd</span></div>
+    <button class="btn" type="button" id="togmodels" aria-pressed="${showModels}">${showModels?'Masquer':'Afficher'} les 5 modèles</button></div></div>
+    <div class="tbl-wrap"><table class="fc"><thead><tr><th>${dayName(selDay)} ${+selDay.slice(8)}</th>${hs.map(o=>`<th class="${o.daylight?'':'nt'}">${o.hour}h</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+function renderAll(){
+  const s=cur();renderSpots();
+  if(!data)return;
+  renderNow(s);renderDays();renderTide();renderTable();
+}
+
+/* ---- chargement ---- */
+let loadSeq=0;
+async function load(force=false){
+  const s=cur();if(!s){$('#now').innerHTML='<div class="msg">Ajoute un spot pour commencer.</div>';return}
+  const seq=++loadSeq;data=null;renderSpots();
+  $('#now').innerHTML='<div class="skel" style="grid-column:1/-1"></div>';$('#days').innerHTML='';$('#tide').innerHTML='<div class="skel"></div>';$('#table').innerHTML='<div class="skel" style="height:260px"></div>';
+  try{
+    const [wind,sun,marine,brest]=await Promise.all([loadWind(s,force),loadSun(s,force),loadMarine(s,force).catch(()=>null),loadBrest(force).catch(()=>null)]);
+    if(seq!==loadSeq)return;
+    data=build(s,wind,sun,marine,brest);
+    if(!selDay||!data.days.includes(selDay))selDay=data.days[0];
+    renderAll();
+  }catch(e){
+    if(seq!==loadSeq)return;
+    $('#now').innerHTML=`<div class="msg err" style="grid-column:1/-1">Impossible de charger les prévisions : ${esc(e.message)}. Vérifie ta connexion puis appuie sur Actualiser.</div>`;
+    $('#tide').innerHTML='';$('#table').innerHTML='';
+  }
+}
+
+/* ---- éditeur de spot ---- */
+function openEditor(spot,isNew){
+  editing={...spot,sectors:[...(spot.sectors||[])],_new:!!isNew};delArmed=false;renderEditor();
+  $('#editor').hidden=false;$('#editor').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function renderEditor(){
+  const e=editing,el=$('#editor');
+  const comp=DIRS.map((d,i)=>{const a=(i*22.5-90)*Math.PI/180,R=94;return `<button type="button" data-sec="${i}" aria-pressed="${e.sectors.includes(i)}" style="left:${115+R*Math.cos(a)}px;top:${115+R*Math.sin(a)}px">${d}</button>`}).join('');
+  el.innerHTML=`<div class="editor">
+    <div class="sechead"><h3>${e._new?'Nouveau spot':'Réglages du spot'}</h3><button class="btn ghost" type="button" id="ed-close">Fermer</button></div>
+    ${e._new&&!e.lat?`<div class="field"><label class="label" for="ed-q">Rechercher un lieu</label><div class="row"><input id="ed-q" type="search" placeholder="ex. Wissant, Quiberon, Leucate…" style="flex:1;min-width:180px;border:1px solid var(--line);background:var(--panel2);border-radius:7px;padding:7px 9px"><button class="btn primary" type="button" id="ed-search">Chercher</button></div><div class="results" id="ed-res"></div><div class="muted" style="font-size:12.5px">Ou saisis directement les coordonnées ci-dessous (clic droit sur Google Maps → coordonnées).</div></div>`:''}
+    <div class="grid">
+      <div class="field"><label class="label" for="ed-name">Nom</label><input id="ed-name" value="${esc(e.name||'')}"></div>
+      <div class="field"><label class="label" for="ed-lat">Latitude</label><input id="ed-lat" inputmode="decimal" value="${e.lat??''}"></div>
+      <div class="field"><label class="label" for="ed-lon">Longitude</label><input id="ed-lon" inputmode="decimal" value="${e.lon??''}"></div>
+      <div class="field"><label class="label" for="ed-sport">Pratique</label><select id="ed-sport">${Object.entries(SPORTS).map(([k,v])=>`<option value="${k}" ${e.sport===k?'selected':''}>${v.label}</option>`).join('')}</select></div>
+      <div class="field"><label class="label" for="ed-wmin">Vent mini (nd)</label><input id="ed-wmin" type="number" min="0" max="60" value="${e.wmin}"></div>
+      <div class="field"><label class="label" for="ed-wmax">Vent maxi (nd)</label><input id="ed-wmax" type="number" min="0" max="70" value="${e.wmax}"></div>
+      <div class="field"><label class="label" for="ed-wave">Vagues mini (m, surf)</label><input id="ed-wave" type="number" step="0.1" min="0" max="10" value="${e.wave}"></div>
+      <div class="field"><label class="label" for="ed-tide">Marée idéale</label><select id="ed-tide">${Object.entries(TIDEPREF).map(([k,v])=>`<option value="${k}" ${e.tidePref===k?'selected':''}>${v}</option>`).join('')}</select></div>
+      <div class="field"><label class="label" for="ed-corr">Correction horaire marée (min)</label><input id="ed-corr" type="number" step="5" min="-180" max="180" value="${e.corr||0}"></div>
+    </div>
+    <div class="field"><span class="label">${e.sport==='surf'?'Directions de vent favorables (offshore)':'Directions de vent navigables'}</span>
+      <div class="compass" id="ed-comp">${comp}<div class="c">${e.sectors.length?e.sectors.length+' secteurs':'Aucun choisi = toutes directions'}</div></div></div>
+    <div class="row" style="justify-content:space-between">
+      <div class="row"><button class="btn primary" type="button" id="ed-save">Enregistrer</button><button class="btn ghost" type="button" id="ed-cancel">Annuler</button></div>
+      ${e._new?'':`<button class="btn danger" type="button" id="ed-del">${delArmed?'Confirmer la suppression':'Supprimer ce spot'}</button>`}
+    </div>
+    <div id="ed-msg"></div>
+  </div>`;
+}
+function readEditor(){
+  const v=id=>$('#'+id)?.value;
+  Object.assign(editing,{name:(v('ed-name')||'').trim(),lat:parseFloat(String(v('ed-lat')).replace(',','.')),lon:parseFloat(String(v('ed-lon')).replace(',','.')),
+    sport:v('ed-sport'),wmin:+v('ed-wmin')||0,wmax:+v('ed-wmax')||0,wave:+v('ed-wave')||0,tidePref:v('ed-tide'),corr:+v('ed-corr')||0});
+}
+async function doSearch(){
+  const q=($('#ed-q').value||'').trim();if(q.length<2)return;
+  const box=$('#ed-res');box.innerHTML='<div class="muted">Recherche…</div>';
+  try{
+    const d=await getJSON(`${GEO}?name=${encodeURIComponent(q)}&count=8&language=fr`,1440);
+    const res=d.results||[];
+    box.innerHTML=res.length?res.map((r,i)=>`<button type="button" data-geo="${i}"><b>${esc(r.name)}</b> <span class="muted">${esc([r.admin2,r.admin1,r.country].filter(Boolean).join(', '))} · ${r.latitude.toFixed(3)}, ${r.longitude.toFixed(3)}</span></button>`).join(''):'<div class="muted">Aucun résultat. Essaie un autre nom ou saisis les coordonnées.</div>';
+    box._res=res;
+  }catch(e){box.innerHTML=`<div class="msg err">Recherche impossible : ${esc(e.message)}</div>`}
+}
+
+/* ---- événements ---- */
+document.addEventListener('click',ev=>{
+  const b=ev.target.closest('button');if(!b)return;
+  if(b.dataset.id){curId=b.dataset.id;LS.set('vm.cur',curId);selDay=null;$('#editor').hidden=true;load();return}
+  if(b.id==='addspot'){const sp=SPORTS.kite;openEditor({id:'s'+Date.now().toString(36),name:'',lat:null,lon:null,sport:'kite',wmin:sp.wmin,wmax:sp.wmax,wave:sp.wave,sectors:[],tidePref:'all',corr:0},true);return}
+  if(b.id==='editspot'){openEditor(cur(),false);return}
+  if(b.dataset.day){selDay=b.dataset.day;renderDays();renderTide();renderTable();return}
+  if(b.id==='togmodels'){showModels=!showModels;LS.set('vm.models',showModels);renderTable();return}
+  if(b.id==='refresh'){load(true);return}
+  if(b.id==='ed-close'||b.id==='ed-cancel'){$('#editor').hidden=true;editing=null;return}
+  if(b.id==='ed-search'){doSearch();return}
+  if(b.dataset.geo!=null){const r=$('#ed-res')._res[+b.dataset.geo];readEditor();editing.name=editing.name||r.name;editing.lat=+r.latitude.toFixed(4);editing.lon=+r.longitude.toFixed(4);renderEditor();return}
+  if(b.dataset.sec!=null){readEditor();const i=+b.dataset.sec,k=editing.sectors.indexOf(i);k<0?editing.sectors.push(i):editing.sectors.splice(k,1);editing.sectors.sort((a,c)=>a-c);renderEditor();return}
+  if(b.id==='ed-save'){
+    readEditor();const e=editing;
+    if(!e.name||!isFinite(e.lat)||!isFinite(e.lon)||Math.abs(e.lat)>90||Math.abs(e.lon)>180){$('#ed-msg').innerHTML='<div class="msg err">Il faut un nom et des coordonnées valides (ex. 47.84 et -4.35).</div>';return}
+    if(e.sport!=='surf'&&e.wmin>=e.wmax){$('#ed-msg').innerHTML='<div class="msg err">Le vent mini doit être inférieur au vent maxi.</div>';return}
+    const clean={...e};delete clean._new;
+    const old=spots.find(s=>s.id===e.id);
+    if(old&&(old.lat!==clean.lat||old.lon!==clean.lon))delete clean.mOff;
+    if(old)spots[spots.indexOf(old)]=clean;else spots.push(clean);
+    saveSpots();curId=clean.id;LS.set('vm.cur',curId);$('#editor').hidden=true;editing=null;load();return}
+  if(b.id==='ed-del'){
+    if(!delArmed){delArmed=true;readEditor();renderEditor();return}
+    spots=spots.filter(s=>s.id!==editing.id);saveSpots();curId=spots[0]?.id;LS.set('vm.cur',curId);$('#editor').hidden=true;editing=null;load();return}
+});
+document.addEventListener('change',ev=>{
+  if(ev.target.id==='ed-sport'&&editing){readEditor();const d=SPORTS[editing.sport];editing.wmin=d.wmin;editing.wmax=d.wmax;editing.wave=d.wave;renderEditor()}
+});
+document.addEventListener('keydown',ev=>{if(ev.key==='Enter'&&ev.target.id==='ed-q'){ev.preventDefault();doSearch()}});
+
+load();
+setInterval(()=>{if(document.visibilityState==='visible'&&data)renderAll()},5*60000);
+})();
+</script>
+</body>
+</html>
