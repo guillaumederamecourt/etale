@@ -3,7 +3,6 @@ import { upsertCloudSpots, deleteCloudSpot } from './supabase.js';
 
 const KEY = 'etale.spots';
 const CUR_KEY = 'etale.current';
-const SPORT_KEY = 'etale.sport';
 
 const EXAMPLES = [
   {
@@ -56,14 +55,13 @@ const initial = read(KEY, null) || structuredClone(EXAMPLES);
 export const store = $state({
   spots: initial,
   currentId: read(CUR_KEY, initial[0]?.id ?? null),
-  sportBySpot: read(SPORT_KEY, {}),
   userId: null,
   syncError: '',
 });
 
 export const currentSpot = () => store.spots.find((s) => s.id === store.currentId) || store.spots[0] || null;
 
-export const sportFor = (spot) => store.sportBySpot[spot?.id] || spot?.defaultSport || 'kite';
+export const sportFor = (spot) => spot?.defaultSport || 'kite';
 
 function saveLocal() {
   write(KEY, $state.snapshot(store.spots));
@@ -92,8 +90,11 @@ export function selectSpot(id) {
 }
 
 export function setSport(spotId, sport) {
-  store.sportBySpot[spotId] = sport;
-  write(SPORT_KEY, $state.snapshot(store.sportBySpot));
+  const s = store.spots.find((x) => x.id === spotId);
+  if (!s || s.defaultSport === sport) return;
+  s.defaultSport = sport;
+  saveLocal();
+  pushSpots([s]);
 }
 
 export function newSpot({ name = '', lat = null, lon = null } = {}) {
