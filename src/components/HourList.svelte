@@ -2,10 +2,10 @@
   import HourRow from './HourRow.svelte';
   import HourColumns from './HourColumns.svelte';
   import ScoreLegend from './ScoreLegend.svelte';
-  import { MODELS } from '../lib/forecast.js';
+  import { MODELS, tideNear } from '../lib/forecast.js';
   import { r0 } from '../lib/format.js';
 
-  let { hours, sport } = $props();
+  let { hours, sport, ex } = $props();
 
   let showModels = $state(false);
 </script>
@@ -21,7 +21,7 @@
   <HourColumns />
   <div class="card rows">
     {#each hours as o (o.key)}
-      <HourRow {o} {sport} id="h-{o.hour}">
+      <HourRow {o} {sport} tide={tideNear(ex, o.t, 30)} id="h-{o.hour}">
         {#if showModels}
           <div class="models">
             {#each MODELS as m (m.id)}

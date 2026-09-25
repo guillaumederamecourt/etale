@@ -2,7 +2,7 @@
   import HourRow from './HourRow.svelte';
   import HourColumns from './HourColumns.svelte';
   import ScoreLegend from './ScoreLegend.svelte';
-  import { stepHours, dayHours, bestWindow, windowLabel } from '../lib/forecast.js';
+  import { stepHours, dayHours, bestWindow, windowLabel, tideNear } from '../lib/forecast.js';
   import { coefClass } from '../lib/tide.js';
   import { dayShort } from '../lib/format.js';
 
@@ -36,7 +36,7 @@
         <svg class="chev" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="m9 5 7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>
       </button>
       {#each x.rows as o (o.key)}
-        <HourRow {o} {sport} onclick={() => onopen(x.d, o.hour)} />
+        <HourRow {o} {sport} tide={tideNear(data.ex, o.t, 90)} onclick={() => onopen(x.d, o.hour)} />
       {/each}
     </section>
   {/each}

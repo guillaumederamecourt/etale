@@ -2,7 +2,7 @@
   <span><i class="s1"></i>note 1</span>
   <span><i class="s2"></i>note 2</span>
   <span><i class="s3"></i>note 3</span>
-  <span>· nuit grisée · pastille : accord des modèles</span>
+  <span>· nuit grisée · pastille : accord des modèles · flèche vague : heure exacte de pleine ou basse mer</span>
 </div>
 
 <style>

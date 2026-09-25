@@ -179,6 +179,8 @@ export function daySummary(hours, day) {
   return { hs, maxWind, maxWave, window: bestWindow(hs) };
 }
 
+export const tideNear = (ex, t, halfSpan) => ex.find((e) => e.t >= t - halfSpan && e.t < t + halfSpan) ?? null;
+
 export const stepHours = (hours, day, fromHour = 0) =>
   hours.filter((o) => o.day === day && STEP_HOURS.includes(o.hour) && o.hour >= fromHour);
 

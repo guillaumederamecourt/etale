@@ -2,9 +2,9 @@
   import Arrow from './Arrow.svelte';
   import WeatherIcon from './WeatherIcon.svelte';
   import { agreeCls } from '../lib/forecast.js';
-  import { wcolor, r0, r1, dirName } from '../lib/format.js';
+  import { wcolor, r0, r1, dirName, hhmm, signed } from '../lib/format.js';
 
-  let { o, sport, onclick = null, id = undefined, children = undefined } = $props();
+  let { o, sport, tide = null, onclick = null, id = undefined, children = undefined } = $props();
 
   const wc = $derived(wcolor(o.w));
   const gc = $derived(wcolor(o.g));
@@ -18,11 +18,22 @@
     <span class="wv" style:background={wc[0]} style:color={wc[1]}>{r0(o.w)}</span>
     <span class="wg" style:background={gc[0]} style:color={gc[1]}>{r0(o.g)}</span>
   </span>
-  <span class="dir">
-    <Arrow deg={o.d} size={15} />
-    <span class="dn">{dirName(o.d)}</span>
-    <span class="agree {agreeCls(o.spread)}" title="Écart entre modèles {r0(o.spread)} nd"></span>
-  </span>
+  {#if tide}
+    {@const high = tide.type === 'PM'}
+    <span class="dir tide" class:high title="{high ? 'Pleine mer' : 'Basse mer'} à {hhmm(tide.t)}, {signed(tide.v)} m">
+      <svg viewBox="0 0 24 24" width="18" height="18" role="img" aria-label={high ? 'Pleine mer' : 'Basse mer'}>
+        <path d="M2 19c2.5-2 5-2 7.5 0s5 2 7.5 0 3.5-1.6 5-1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        <path d={high ? 'M12 14V3M8 7l4-4 4 4' : 'M12 3v11M8 10l4 4 4-4'} fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+      <span class="dn">{hhmm(tide.t)}</span>
+    </span>
+  {:else}
+    <span class="dir">
+      <Arrow deg={o.d} size={15} />
+      <span class="dn">{dirName(o.d)}</span>
+      <span class="agree {agreeCls(o.spread)}" title="Écart entre modèles {r0(o.spread)} nd"></span>
+    </span>
+  {/if}
   <span class="wave">{r1(o.wave)}<small> m</small> <span class="muted">{r0(o.per)}<small> s</small></span></span>
 {/snippet}
 
@@ -123,6 +134,20 @@
     align-items: center;
     gap: 4px;
     min-width: 0;
+  }
+
+  .tide {
+    color: var(--muted);
+    gap: 3px;
+  }
+
+  .tide.high {
+    color: var(--accent);
+  }
+
+  .tide .dn {
+    color: var(--ink);
+    font-weight: 700;
   }
 
   .dn {
