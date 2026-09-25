@@ -1,5 +1,5 @@
 import { untrack } from 'svelte';
-import { loadForecast } from './api.js';
+import { loadForecast, loadBeaconLive } from './api.js';
 import { setMarineOffset } from './spots.svelte.js';
 
 const REFRESH_MS = 30 * 60000;
@@ -7,6 +7,7 @@ const REFRESH_MS = 30 * 60000;
 class Forecasts {
   map = $state.raw({});
   now = $state(Date.now());
+  live = $state.raw({});
 
   get(id) {
     return this.map[id];
@@ -45,6 +46,18 @@ function load(spot, force) {
       if (forecasts.get(spot.id)?.at !== at) return;
       forecasts.set(spot.id, { key, at, status: 'error', data: cur?.key === key ? cur.data : null, error: e.message || String(e) });
     },
+  );
+}
+
+const LIVE_MS = 5 * 60000;
+let liveAt = 0;
+
+export function ensureLive(force = false) {
+  if (!force && Date.now() - liveAt < LIVE_MS) return;
+  liveAt = Date.now();
+  loadBeaconLive(force).then(
+    (live) => (forecasts.live = live),
+    () => (liveAt = 0),
   );
 }
 

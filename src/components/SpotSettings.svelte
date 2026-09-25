@@ -4,6 +4,8 @@
   import SportPicker from './SportPicker.svelte';
   import { SPORTS, SPORT_DEFAULTS, TIDEPREF } from '../lib/forecast.js';
   import { saveSpot, removeSpot, store } from '../lib/spots.svelte.js';
+  import BEACONS from '../lib/beacons.json';
+  import { forecasts, ensureLive } from '../lib/forecasts.svelte.js';
 
   let { draft, isNew, onclose, onsaved } = $props();
 
@@ -22,6 +24,30 @@
 
   const num = (v) => parseFloat(String(v).replace(',', '.'));
 
+  const SUGGEST_KM = 15;
+
+  const km = (b, la, lo) => Math.hypot((b.lat - la) * 111, (b.lon - lo) * 111 * Math.cos((la * Math.PI) / 180));
+
+  const nearby = $derived.by(() => {
+    const la = num(lat);
+    const lo = num(lon);
+    if (!isFinite(la) || !isFinite(lo)) return BEACONS.map((b) => ({ ...b, km: null }));
+    return BEACONS.map((b) => ({ ...b, km: km(b, la, lo) })).sort((a, b) => a.km - b.km);
+  });
+
+  const hasLive = $derived(Object.keys(forecasts.live).length > 0);
+  const measuring = (b) => !hasLive || forecasts.live[b.id] != null;
+  let suggest = initial.beacon === undefined;
+
+  ensureLive();
+
+  $effect(() => {
+    if (!suggest || !hasLive) return;
+    suggest = false;
+    const first = nearby.find(measuring);
+    if (first?.km != null && first.km <= SUGGEST_KM) spot.beacon = first.id;
+  });
+
   function save() {
     const la = num(lat);
     const lo = num(lon);
@@ -36,6 +62,8 @@
     spot.lat = la;
     spot.lon = lo;
     spot.tideCorr = +spot.tideCorr || 0;
+    spot.beacon ??= null;
+    spot.beaconName = BEACONS.find((b) => b.id === spot.beacon)?.name ?? null;
     for (const c of Object.values(spot.sports)) for (const f of ['wmin', 'wmax', 'waveMin', 'periodMin', 'windMax']) if (f in c) c[f] = +c[f] || 0;
     error = '';
     saveSpot($state.snapshot(spot));
@@ -81,6 +109,15 @@
     <label class="field">
       <span class="label">Correction marée (min)</span>
       <input class="input" type="number" step="5" min="-360" max="360" bind:value={spot.tideCorr} />
+    </label>
+    <label class="field full">
+      <span class="label">Balise de vent réel (Wind Morbihan)</span>
+      <select class="input" bind:value={spot.beacon} onchange={() => (suggest = false)}>
+        <option value={null}>Aucune</option>
+        {#each nearby as b (b.id)}
+          <option value={b.id}>{b.name}{b.km != null ? ` · ${Math.round(b.km)} km` : ''}{measuring(b) ? '' : ' · pas de mesure'}</option>
+        {/each}
+      </select>
     </label>
     <p class="small muted full hint">
       Correction horaire : compare une fois l'heure de pleine mer affichée avec l'annuaire (maree.shom.fr) et saisis l'écart en minutes.

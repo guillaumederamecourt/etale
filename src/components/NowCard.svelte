@@ -6,7 +6,10 @@
   import { coefClass, coefLabel } from '../lib/tide.js';
   import { wcolor, r0, r1, hhmm, dirName, dayShort, signed } from '../lib/format.js';
 
-  let { spot, data, hours, sport, now, onedit } = $props();
+  let { spot, data, hours, sport, now, live, onedit, ontide } = $props();
+
+  const STALE_MS = 30 * 60000;
+  const clock = new Intl.DateTimeFormat('fr-FR', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Paris' });
 
   const n = $derived(hours.find((o) => o.key === nowKey(data, now)) || hours[0]);
   const today = $derived(n.day);
@@ -17,6 +20,8 @@
   const rising = $derived(tideNext ? tideNext.type === 'PM' : null);
   const colors = $derived(wcolor(n.w));
   const ag = $derived(agreeCls(n.spread));
+  const real = $derived(spot.beacon != null ? live?.[spot.beacon] ?? null : null);
+  const realStale = $derived(real ? now - real.at > STALE_MS : false);
 </script>
 
 <section class="card now" aria-label="Maintenant">
@@ -49,15 +54,23 @@
     </div>
     <div class="meta">
       <div>Rafales <b>{r0(n.g)} nd</b></div>
-      {#if n.spread != null}
+      {#if real}
+        <div
+          class="pill"
+          class:stale={realStale}
+          title="{spot.beaconName ?? 'Balise'} : {r0(real.w)} nd, rafales {r0(real.g)} nd, {dirName(real.d)}"
+        >
+          <Arrow deg={real.d} size={13} />Vent réel : {r0(real.w)} nd ({clock.format(real.at).replace(':', 'h')})
+        </div>
+      {:else if n.spread != null}
         <div class="pill"><span class="agree {ag}"></span>Accord {agreeLabel(n.spread)} · {n.n} modèles</div>
       {/if}
     </div>
   </div>
 
   <div class="grid">
-    <div class="cell">
-      <div class="label">Coefficient</div>
+    <button class="cell link" type="button" aria-label="Voir la courbe de marée du jour" onclick={ontide}>
+      <div class="label">Coefficient <span class="go" aria-hidden="true">›</span></div>
       <div class="coefs">
         {#each coefs as x (x.t)}
           <span class="big-coef {coefClass(x.c)}">{x.c}</span>
@@ -69,7 +82,7 @@
         {#if coefs.length}{coefLabel(Math.max(...coefs.map((x) => x.c)))}{/if}
         {#if peak}<br />Pic {peak.c} · {dayShort(peak.day)}{/if}
       </div>
-    </div>
+    </button>
 
     <div class="cell">
       <div class="label">Vagues</div>
@@ -79,8 +92,8 @@
       </div>
     </div>
 
-    <div class="cell">
-      <div class="label">Marée</div>
+    <button class="cell link" type="button" aria-label="Voir la courbe de marée du jour" onclick={ontide}>
+      <div class="label">Marée <span class="go" aria-hidden="true">›</span></div>
       {#if tideNext}
         <div class="val">{rising ? 'Montante' : 'Descendante'}</div>
         <div class="small muted">
@@ -90,7 +103,7 @@
         <div class="val muted">–</div>
         <div class="small muted">Données indisponibles</div>
       {/if}
-    </div>
+    </button>
 
     <div class="cell" class:ok={win}>
       <div class="label">Créneau {SPORTS[sport].toLowerCase()}</div>
@@ -202,6 +215,10 @@
     font-weight: 600;
   }
 
+  .pill.stale {
+    opacity: 0.6;
+  }
+
   .grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -217,6 +234,24 @@
     gap: 4px;
     align-content: start;
     min-width: 0;
+  }
+
+  .cell.link {
+    font: inherit;
+    color: inherit;
+    text-align: left;
+    width: 100%;
+  }
+
+  .cell.link:active {
+    background: var(--accent-soft);
+  }
+
+  .go {
+    float: right;
+    font-size: 16px;
+    line-height: 12px;
+    color: var(--accent);
   }
 
   .cell.ok {

@@ -4,14 +4,16 @@
   import NowCard from './NowCard.svelte';
   import ForecastList from './ForecastList.svelte';
   import DayDetail from './DayDetail.svelte';
+  import TideView from './TideView.svelte';
   import { store, currentSpot, selectSpot, sportFor, setSport } from '../lib/spots.svelte.js';
-  import { forecasts, ensureForecast, keyOf } from '../lib/forecasts.svelte.js';
+  import { forecasts, ensureForecast, ensureLive, keyOf } from '../lib/forecasts.svelte.js';
   import { scoreHours, sportConfig, nowKey, SPORTS, TIDEPREF } from '../lib/forecast.js';
   import { DIRS } from '../lib/format.js';
 
   let { onadd, onedit } = $props();
 
   let detailDay = $state(null);
+  let tideDay = $state(null);
   let listScroll = 0;
 
   const spot = $derived(currentSpot());
@@ -39,8 +41,16 @@
     else window.scrollTo(0, 0);
   }
 
+  async function openTide() {
+    listScroll = window.scrollY;
+    tideDay = data.days[0];
+    await tick();
+    window.scrollTo(0, 0);
+  }
+
   async function closeDay() {
     detailDay = null;
+    tideDay = null;
     await tick();
     window.scrollTo(0, listScroll);
   }
@@ -50,8 +60,19 @@
     if (spot && keyOf(spot)) ensureForecast(spot);
   });
 
+  $effect(() => {
+    forecasts.now;
+    if (spot?.beacon != null) ensureLive();
+  });
+
+  function refresh() {
+    ensureForecast(spot, true);
+    if (spot.beacon != null) ensureLive(true);
+  }
+
   function pick(id) {
     detailDay = null;
+    tideDay = null;
     selectSpot(id);
   }
 </script>
@@ -63,7 +84,7 @@
     type="button"
     aria-label="Actualiser"
     disabled={entry?.status === 'loading'}
-    onclick={() => ensureForecast(spot, true)}
+    onclick={refresh}
   >
     <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" class:spin={entry?.status === 'loading'}>
       <path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
@@ -99,10 +120,12 @@
   {:else if !hours}
     <div class="skel" style="height:300px"></div>
     <div class="skel" style="height:420px"></div>
+  {:else if tideDay && data.days.includes(tideDay)}
+    <TideView {spot} {data} day={tideDay} now={forecasts.now} onback={closeDay} onday={(d) => (tideDay = d)} />
   {:else if detailDay && data.days.includes(detailDay)}
     <DayDetail {spot} {data} {hours} {sport} day={detailDay} onback={closeDay} onday={(d) => (detailDay = d)} />
   {:else}
-    <NowCard {spot} {data} {hours} {sport} now={forecasts.now} onedit={() => onedit(spot)} />
+    <NowCard {spot} {data} {hours} {sport} now={forecasts.now} live={forecasts.live} onedit={() => onedit(spot)} ontide={openTide} />
     <ForecastList {data} {hours} {sport} {nowHour} onopen={openDay} />
   {/if}
 {/if}

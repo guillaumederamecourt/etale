@@ -4,6 +4,7 @@ import { BREST } from './tide.js';
 const API = 'https://api.open-meteo.com/v1/forecast';
 const MARINE = 'https://marine-api.open-meteo.com/v1/marine';
 const GEO = 'https://geocoding-api.open-meteo.com/v1/search';
+const BEACON_LIVE = 'https://private2.windmorbihan.com/mesures/getlastalljson.json';
 const PREFIX = 'etale.c:';
 
 const MARINE_OFFSETS = [
@@ -111,4 +112,15 @@ export async function loadForecast(spot, force = false) {
 export async function searchPlaces(q) {
   const d = await getJSON(`${GEO}?name=${encodeURIComponent(q)}&count=8&language=fr`, 1440);
   return d.results || [];
+}
+
+export async function loadBeaconLive(force = false) {
+  const list = await getJSON(BEACON_LIVE, 5, force);
+  const out = {};
+  for (const m of list) {
+    const at = +Object.keys(m.created || {})[0];
+    if (!at) continue;
+    out[m.nid] = { w: m.wind_pow_knot, g: m.wind_pow_knot_max, d: m.wind_dir_true, at: at * 1000 };
+  }
+  return out;
 }

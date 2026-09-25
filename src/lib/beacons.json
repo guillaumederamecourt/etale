@@ -1,0 +1,188 @@
+[
+ {
+  "id": 29058003,
+  "name": "Beg Meil",
+  "lat": 47.8545,
+  "lon": -3.97617
+ },
+ {
+  "id": 56009001,
+  "name": "Belle Île",
+  "lat": 47.29433,
+  "lon": -3.21833
+ },
+ {
+  "id": 12,
+  "name": "Cap de la Chèvre",
+  "lat": 48.16999,
+  "lon": -4.55271
+ },
+ {
+  "id": 6,
+  "name": "Drenec",
+  "lat": 47.71791,
+  "lon": -4.0088
+ },
+ {
+  "id": 11,
+  "name": "Feu de Kerroch",
+  "lat": 47.69952,
+  "lon": -3.46097
+ },
+ {
+  "id": 56069001,
+  "name": "Groix Sémaphore",
+  "lat": 47.65233,
+  "lon": -3.50233
+ },
+ {
+  "id": 10438252,
+  "name": "I2N",
+  "lat": 47.5095,
+  "lon": -3.1194
+ },
+ {
+  "id": 73091265,
+  "name": "Isthme",
+  "lat": 47.55083,
+  "lon": -3.13472
+ },
+ {
+  "id": 7205,
+  "name": "Lann Bihoué",
+  "lat": 47.76283,
+  "lon": -3.43567
+ },
+ {
+  "id": 13,
+  "name": "Loctudy",
+  "lat": 47.83369,
+  "lon": -4.15627
+ },
+ {
+  "id": 3,
+  "name": "Noirmoutier",
+  "lat": 47.02458,
+  "lon": -2.3067
+ },
+ {
+  "id": 73091300,
+  "name": "Pen Men",
+  "lat": 47.64774,
+  "lon": -3.50973
+ },
+ {
+  "id": 29158001,
+  "name": "Penmarch",
+  "lat": 47.7975,
+  "lon": -4.37483
+ },
+ {
+  "id": 10,
+  "name": "Phare de Port Navalo",
+  "lat": 47.5478,
+  "lon": -2.9183
+ },
+ {
+  "id": 5,
+  "name": "Phare de la Teignouse",
+  "lat": 47.45733,
+  "lon": -3.0458
+ },
+ {
+  "id": 73091264,
+  "name": "Phare des Cardinaux",
+  "lat": 47.32122,
+  "lon": -2.83487
+ },
+ {
+  "id": 73091304,
+  "name": "Phare du Four",
+  "lat": 47.2978,
+  "lon": -2.63426
+ },
+ {
+  "id": 73091305,
+  "name": "Phare du Grand Charpentier",
+  "lat": 47.22252,
+  "lon": -2.31575
+ },
+ {
+  "id": 29214001,
+  "name": "Plovan",
+  "lat": 47.91583,
+  "lon": -4.3775
+ },
+ {
+  "id": 7,
+  "name": "Pointe de Trévignon",
+  "lat": 47.79325,
+  "lon": -3.85535
+ },
+ {
+  "id": 29168001,
+  "name": "Pointe du Raz",
+  "lat": 48.03883,
+  "lon": -4.732
+ },
+ {
+  "id": 8,
+  "name": "Pornichet",
+  "lat": 47.25826,
+  "lon": -2.35234
+ },
+ {
+  "id": 73091306,
+  "name": "Port de Saint Nazaire - Jetée Est",
+  "lat": 47.26882,
+  "lon": -2.20084
+ },
+ {
+  "id": 56186003,
+  "name": "Quiberon Aérodrome",
+  "lat": 47.47983,
+  "lon": -3.099
+ },
+ {
+  "id": 44103001,
+  "name": "ST Nazaire Montoir",
+  "lat": 47.31383,
+  "lon": -2.1545
+ },
+ {
+  "id": 2,
+  "name": "Semaphore St Gildas",
+  "lat": 47.1337,
+  "lon": -2.24585
+ },
+ {
+  "id": 73091277,
+  "name": "Semaphore d'Etel",
+  "lat": 47.64611,
+  "lon": -3.21443
+ },
+ {
+  "id": 44184001,
+  "name": "Sémaphore Pointe de Chemoulin",
+  "lat": 47.23367,
+  "lon": -2.2985
+ },
+ {
+  "id": 1,
+  "name": "École de voile Océane",
+  "lat": 47.567,
+  "lon": -3.004
+ },
+ {
+  "id": 4,
+  "name": "Île Dumet",
+  "lat": 47.4115,
+  "lon": -2.62004
+ },
+ {
+  "id": 9,
+  "name": "Île d'Arz",
+  "lat": 47.595,
+  "lon": -2.81044
+ }
+]

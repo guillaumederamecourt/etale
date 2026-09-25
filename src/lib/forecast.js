@@ -108,6 +108,7 @@ export function build(spot, wind, meteo, marine, brest) {
     hours,
     ex,
     hasTide: !!Sx,
+    tide: Sx,
     sun: sunMap,
     days: meteo.daily.time,
     coefs,

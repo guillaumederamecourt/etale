@@ -64,6 +64,8 @@ Toutes les données viennent d'[Open-Meteo](https://open-meteo.com) (sans clé) 
 - **Vagues, houle et niveau d'eau** : `marine-api.open-meteo.com/v1/marine`. Si le point du spot tombe sur la terre pour le modèle, l'app essaie des décalages de 0,05° à 0,2° et retient le premier point en mer.
 - **Coefficient** : série du niveau d'eau toutes les 15 min à Brest. Pour chaque pleine mer, marnage = hauteur de PM − moyenne des basses mers voisines, coefficient = 16,85 × marnage, arrondi. Le modèle est en avance d'environ 50 min à Brest, les heures sont décalées en conséquence. Écart constaté : ± 4 par rapport à l'annuaire SHOM.
 - **Recherche de lieux** : `geocoding-api.open-meteo.com`.
+- **Vent réel** : balises [Wind Morbihan](https://www.windmorbihan.com/) (dernière mesure de chaque balise, lue directement depuis l'app). Chaque spot peut être relié à une balise dans ses réglages ; la plus proche qui mesure est proposée. La liste des balises (nom, position) est intégrée dans `src/lib/beacons.json` car elle n'est pas accessible depuis le navigateur.
+- **Température et picto météo** : `api.open-meteo.com/v1/forecast` avec le modèle « meilleur choix » d'Open-Meteo (AROME en France).
 
 Les réponses sont gardées en cache dans le navigateur (30 min pour le vent, 60 min pour les données marines).
 
@@ -72,4 +74,5 @@ Les réponses sont gardées en cache dans le navigateur (30 min pour le vent, 60
 - Les horaires de marée viennent d'un modèle global : hors de Brest, ils peuvent être décalés de 30 à 60 min par rapport à l'annuaire. Compare une fois avec [maree.shom.fr](https://maree.shom.fr) et renseigne la « correction horaire » du spot.
 - Les hauteurs d'eau sont données par rapport au niveau moyen, pas au zéro des cartes.
 - Le coefficient est une estimation calculée, pas le coefficient officiel du SHOM.
+- Les mesures Wind Morbihan ne passent pas par une API publique documentée : elles peuvent changer ou s'arrêter sans préavis. L'app affiche alors l'accord des modèles à la place du vent réel. Si des balises sont ajoutées, régénérer `src/lib/beacons.json` depuis `backend.windmorbihan.com/capteurs/list.json`.
 - **Étale n'est pas un outil de navigation.** Pour la sécurité en mer, utiliser les sources officielles (SHOM, Météo-France, bulletins côtiers).
