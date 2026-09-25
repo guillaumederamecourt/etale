@@ -27,7 +27,7 @@ Sans les variables `VITE_SUPABASE_URL` et `VITE_SUPABASE_ANON_KEY`, l'app foncti
 1. Créer un projet sur [supabase.com](https://supabase.com).
 2. **SQL Editor** : exécuter `supabase/schema.sql` (table `spots`, RLS activée, une politique par opération limitée à `auth.uid() = user_id`).
 3. **Authentication → Sign In / Providers → Email** : activer le fournisseur Email et la connexion par code (OTP). Longueur du code : 6.
-4. **Authentication → Emails → Magic Link** : remplacer le lien par le code dans le modèle, par exemple :
+4. **Authentication → Emails → Templates** : dans **Confirm signup** (première connexion d'une adresse) **et** dans **Magic Link** (connexions suivantes), remplacer le lien par le code, par exemple :
 
    ```html
    <h2>Ton code Étale</h2>
