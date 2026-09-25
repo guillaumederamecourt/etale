@@ -7,6 +7,7 @@
   import AccountView from './components/AccountView.svelte';
   import { initAccount } from './lib/account.svelte.js';
   import { startClock } from './lib/forecasts.svelte.js';
+  import { startUpdateCheck } from './lib/update.js';
 
   let tab = $state('forecast');
   let editing = $state(null);
@@ -14,7 +15,12 @@
 
   onMount(() => {
     initAccount();
-    return startClock();
+    const stopClock = startClock();
+    const stopUpdates = startUpdateCheck(() => !editing && tab !== 'account');
+    return () => {
+      stopClock();
+      stopUpdates();
+    };
   });
 
   function go(next) {
