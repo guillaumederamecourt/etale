@@ -81,7 +81,7 @@
     <div class="skel" style="height:300px"></div>
     <div class="skel" style="height:420px"></div>
   {:else if detailDay && data.days.includes(detailDay)}
-    <DayDetail {spot} {data} {hours} {sport} day={detailDay} onback={() => (detailDay = null)} />
+    <DayDetail {spot} {data} {hours} {sport} day={detailDay} onback={() => (detailDay = null)} onday={(d) => (detailDay = d)} />
   {:else}
     <NowCard {spot} {data} {hours} {sport} now={forecasts.now} onedit={() => onedit(spot)} />
     <DayList {data} {hours} {sport} onopen={(d) => (detailDay = d)} />
