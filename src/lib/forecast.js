@@ -28,6 +28,7 @@ export const TIDEPREF = {
 
 export const H0 = 6;
 export const H1 = 22;
+export const STEP_HOURS = [5, 8, 11, 14, 17, 20, 23];
 
 export function median(a) {
   const b = a.filter((v) => v != null).sort((x, y) => x - y);
@@ -36,7 +37,7 @@ export function median(a) {
   return b.length % 2 ? b[m] : (b[m - 1] + b[m]) / 2;
 }
 
-export function build(spot, wind, sun, marine, brest) {
+export function build(spot, wind, meteo, marine, brest) {
   const h = wind.hourly;
   const mIdx = {};
   if (marine) marine.hourly.time.forEach((t, i) => (mIdx[t] = i));
@@ -45,7 +46,9 @@ export function build(spot, wind, sun, marine, brest) {
   const Sx = S ? { ...S, T: S.T.map((t) => t + corr) } : null;
   const ex = Sx ? extremes(Sx) : [];
   const sunMap = {};
-  sun.daily.time.forEach((d, i) => (sunMap[d] = [tm(sun.daily.sunrise[i]), tm(sun.daily.sunset[i])]));
+  meteo.daily.time.forEach((d, i) => (sunMap[d] = [tm(meteo.daily.sunrise[i]), tm(meteo.daily.sunset[i])]));
+  const meteoIdx = {};
+  meteo.hourly.time.forEach((t, i) => (meteoIdx[t] = i));
 
   const hours = h.time.map((t, i) => {
     const models = {};
@@ -71,6 +74,7 @@ export function build(spot, wind, sun, marine, brest) {
     const mh = marine && mi != null ? marine.hourly : null;
     const T = tm(t);
     const day = t.slice(0, 10);
+    const ki = meteoIdx[t];
     const sn = sunMap[day];
     return {
       t: T,
@@ -92,6 +96,9 @@ export function build(spot, wind, sun, marine, brest) {
       lvl: levelAt(Sx, T),
       phase: tidePhase(ex, T),
       daylight: sn ? T >= sn[0] - 30 && T <= sn[1] + 30 : true,
+      temp: ki != null ? meteo.hourly.temperature_2m[ki] : null,
+      code: ki != null ? meteo.hourly.weather_code[ki] : null,
+      isDay: ki != null ? meteo.hourly.is_day[ki] === 1 : true,
     };
   });
 
@@ -102,7 +109,7 @@ export function build(spot, wind, sun, marine, brest) {
     ex,
     hasTide: !!Sx,
     sun: sunMap,
-    days: sun.daily.time,
+    days: meteo.daily.time,
     coefs,
     coefList,
     marineAt: marine?._at ?? null,
@@ -170,6 +177,9 @@ export function daySummary(hours, day) {
   const maxWave = lit.reduce((a, o) => (o.wave != null && (!a || o.wave > a.wave) ? o : a), null);
   return { hs, maxWind, maxWave, window: bestWindow(hs) };
 }
+
+export const stepHours = (hours, day, fromHour = 0) =>
+  hours.filter((o) => o.day === day && STEP_HOURS.includes(o.hour) && o.hour >= fromHour);
 
 export function nowKey(data, now = Date.now()) {
   return new Date(now + data.utc * 1000).toISOString().slice(0, 13) + ':00';

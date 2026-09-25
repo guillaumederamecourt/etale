@@ -1,9 +1,11 @@
 <script>
-  import Arrow from './Arrow.svelte';
-  import { MODELS, agreeCls } from '../lib/forecast.js';
-  import { wcolor, r0, r1, dirName } from '../lib/format.js';
+  import HourRow from './HourRow.svelte';
+  import HourColumns from './HourColumns.svelte';
+  import ScoreLegend from './ScoreLegend.svelte';
+  import { MODELS } from '../lib/forecast.js';
+  import { r0 } from '../lib/format.js';
 
-  let { hours } = $props();
+  let { hours, sport } = $props();
 
   let showModels = $state(false);
 </script>
@@ -16,27 +18,10 @@
     </button>
   </div>
 
-  <ol class="card">
+  <HourColumns />
+  <div class="card rows">
     {#each hours as o (o.key)}
-      {@const wc = wcolor(o.w)}
-      {@const gc = wcolor(o.g)}
-      <li class:night={!o.daylight}>
-        <div class="line">
-          <span class="h">{o.hour}h</span>
-          <span class="dots" title="Note {o.score}/3" aria-label="Note {o.score} sur 3">
-            {#each [1, 2, 3] as k (k)}<i class:on={o.score >= k}></i>{/each}
-          </span>
-          <span class="wind">
-            <span class="wv" style:background={wc[0]} style:color={wc[1]}>{r0(o.w)}</span>
-            <span class="wg" style:background={gc[0]} style:color={gc[1]}>{r0(o.g)}</span>
-          </span>
-          <span class="dir">
-            <Arrow deg={o.d} size={16} />
-            <span class="dn">{dirName(o.d)}</span>
-            <span class="agree {agreeCls(o.spread)}" title="Écart entre modèles {r0(o.spread)} nd"></span>
-          </span>
-          <span class="wave">{r1(o.wave)}<small> m</small> <span class="muted">{r0(o.per)}<small> s</small></span></span>
-        </div>
+      <HourRow {o} {sport} id="h-{o.hour}">
         {#if showModels}
           <div class="models">
             {#each MODELS as m (m.id)}
@@ -48,10 +33,11 @@
             {/each}
           </div>
         {/if}
-      </li>
+      </HourRow>
     {/each}
-  </ol>
-  <div class="small muted">Vent / rafales en nœuds (médiane des modèles) · pastille : accord des modèles (vert ≤ 4 nd, jaune ≤ 8 nd, rouge au-delà)</div>
+  </div>
+  <ScoreLegend />
+  <div class="small muted">Vent / rafales en nœuds, médiane des 5 modèles. Détail des modèles : vent/rafales.</div>
 </section>
 
 <style>
@@ -73,102 +59,16 @@
     letter-spacing: 0.03em;
   }
 
-  ol {
-    list-style: none;
-    margin: 0;
-    padding: 4px 12px;
-  }
-
-  li {
-    border-bottom: 1px solid var(--line);
-    padding: 8px 0;
-  }
-
-  li:last-child {
-    border-bottom: 0;
-  }
-
-  li.night {
-    opacity: 0.5;
-  }
-
-  .line {
-    display: grid;
-    grid-template-columns: 34px 30px 76px 1fr auto;
-    align-items: center;
-    gap: 6px;
-    min-height: 30px;
-  }
-
-  .h {
-    font: 700 18px/1 var(--cond);
-    font-variant-numeric: tabular-nums;
-  }
-
-  .dots {
-    display: inline-flex;
-    gap: 2px;
-  }
-
-  .dots i {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--line);
-  }
-
-  .dots i.on {
-    background: var(--s3);
-  }
-
-  .wind {
-    display: flex;
-    gap: 3px;
-  }
-
-  .wv,
-  .wg {
-    min-width: 34px;
-    text-align: center;
-    border-radius: 6px;
-    font: 700 17px/1.6 var(--cond);
-    font-variant-numeric: tabular-nums;
-  }
-
-  .wg {
-    font-size: 14px;
-    font-weight: 600;
-    opacity: 0.9;
-  }
-
-  .dir {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    min-width: 0;
-  }
-
-  .dn {
-    font: 600 16px/1 var(--cond);
-    min-width: 30px;
-  }
-
-  .wave {
-    font: 600 16px/1 var(--cond);
-    font-variant-numeric: tabular-nums;
-    text-align: right;
-    white-space: nowrap;
-  }
-
-  .wave small {
-    font-size: 12px;
+  .rows {
+    padding: 0;
+    overflow: hidden;
   }
 
   .models {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 4px;
-    margin-top: 6px;
+    padding: 0 12px 8px 16px;
   }
 
   .m {

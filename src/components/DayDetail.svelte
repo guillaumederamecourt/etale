@@ -61,7 +61,7 @@
   </header>
 
   <TideCard {spot} {data} {day} />
-  <HourList hours={summary.hs} />
+  <HourList hours={summary.hs} {sport} />
 </div>
 
 <style>

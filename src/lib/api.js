@@ -65,8 +65,13 @@ const loadWind = (s, force) =>
     force,
   );
 
-const loadSun = (s, force) =>
-  getJSON(`${API}?latitude=${s.lat}&longitude=${s.lon}&daily=sunrise,sunset&forecast_days=7&timezone=auto`, 360, force);
+const loadMeteo = (s, force) =>
+  getJSON(
+    `${API}?latitude=${s.lat}&longitude=${s.lon}&hourly=temperature_2m,weather_code,is_day` +
+      `&daily=sunrise,sunset&forecast_days=7&timezone=auto`,
+    30,
+    force,
+  );
 
 async function loadMarine(s, force) {
   const list = s.marineOffset ? [s.marineOffset, ...MARINE_OFFSETS] : MARINE_OFFSETS;
@@ -94,13 +99,13 @@ const loadBrest = (force) =>
   );
 
 export async function loadForecast(spot, force = false) {
-  const [wind, sun, marine, brest] = await Promise.all([
+  const [wind, meteo, marine, brest] = await Promise.all([
     loadWind(spot, force),
-    loadSun(spot, force),
+    loadMeteo(spot, force),
     loadMarine(spot, force).catch(() => ({ data: null, offset: null })),
     loadBrest(force).catch(() => null),
   ]);
-  return { data: build(spot, wind, sun, marine.data, brest), marineOffset: marine.offset };
+  return { data: build(spot, wind, meteo, marine.data, brest), marineOffset: marine.offset };
 }
 
 export async function searchPlaces(q) {

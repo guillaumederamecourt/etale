@@ -1,16 +1,18 @@
 <script>
+  import { tick } from 'svelte';
   import SportPicker from './SportPicker.svelte';
   import NowCard from './NowCard.svelte';
-  import DayList from './DayList.svelte';
+  import ForecastList from './ForecastList.svelte';
   import DayDetail from './DayDetail.svelte';
   import { store, currentSpot, selectSpot, sportFor, setSport } from '../lib/spots.svelte.js';
   import { forecasts, ensureForecast, keyOf } from '../lib/forecasts.svelte.js';
-  import { scoreHours, sportConfig, SPORTS, TIDEPREF } from '../lib/forecast.js';
+  import { scoreHours, sportConfig, nowKey, SPORTS, TIDEPREF } from '../lib/forecast.js';
   import { DIRS } from '../lib/format.js';
 
   let { onadd, onedit } = $props();
 
   let detailDay = $state(null);
+  let listScroll = 0;
 
   const spot = $derived(currentSpot());
   const sport = $derived(sportFor(spot));
@@ -25,6 +27,23 @@
     const secs = cfg.sectors?.length ? cfg.sectors.map((i) => DIRS[i]).join(' ') : 'toutes directions';
     return [SPORTS[sport], range, (sport === 'surf' ? 'offshore ' : '') + secs, TIDEPREF[cfg.tidePref]].join(' · ');
   });
+
+  const nowHour = $derived(data ? +nowKey(data, forecasts.now).slice(11, 13) : 0);
+
+  async function openDay(day, hour = null) {
+    listScroll = window.scrollY;
+    detailDay = day;
+    await tick();
+    const row = hour != null && document.getElementById(`h-${hour}`);
+    if (row) row.scrollIntoView({ block: 'center' });
+    else window.scrollTo(0, 0);
+  }
+
+  async function closeDay() {
+    detailDay = null;
+    await tick();
+    window.scrollTo(0, listScroll);
+  }
 
   $effect(() => {
     forecasts.now;
@@ -81,10 +100,10 @@
     <div class="skel" style="height:300px"></div>
     <div class="skel" style="height:420px"></div>
   {:else if detailDay && data.days.includes(detailDay)}
-    <DayDetail {spot} {data} {hours} {sport} day={detailDay} onback={() => (detailDay = null)} onday={(d) => (detailDay = d)} />
+    <DayDetail {spot} {data} {hours} {sport} day={detailDay} onback={closeDay} onday={(d) => (detailDay = d)} />
   {:else}
     <NowCard {spot} {data} {hours} {sport} now={forecasts.now} onedit={() => onedit(spot)} />
-    <DayList {data} {hours} {sport} onopen={(d) => (detailDay = d)} />
+    <ForecastList {data} {hours} {sport} {nowHour} onopen={openDay} />
   {/if}
 {/if}
 

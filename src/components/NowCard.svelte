@@ -1,5 +1,7 @@
 <script>
   import Arrow from './Arrow.svelte';
+  import WeatherIcon from './WeatherIcon.svelte';
+  import { weather } from '../lib/weather.js';
   import { nowKey, nowMinutes, dayHours, bestWindow, windowLabel, agreeCls, agreeLabel, weekPeak, SPORTS } from '../lib/forecast.js';
   import { coefClass, coefLabel } from '../lib/tide.js';
   import { wcolor, r0, r1, hhmm, dirName, dayShort, signed } from '../lib/format.js';
@@ -23,7 +25,14 @@
       <div class="label">Maintenant · {hhmm(n.t)}</div>
       <h2>{spot.name}</h2>
     </div>
-    <button class="icon-btn" type="button" aria-label="Réglages du spot" onclick={onedit}>
+    <div class="sky">
+      <div class="temp">
+        <WeatherIcon code={n.code} isDay={n.isDay} size={34} />
+        {r0(n.temp)}°
+      </div>
+      {#if n.code != null}<div class="small muted">{weather(n.code).label}</div>{/if}
+    </div>
+    <button class="icon-btn gear" type="button" aria-label="Réglages du spot" onclick={onedit}>
       <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
         <path d="M4 7h10M18 7h2M4 17h4M12 17h8M16 5v4M10 15v4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
       </svg>
@@ -105,9 +114,33 @@
     margin: -4px -8px 0 0;
   }
 
+  .head > div:first-child {
+    flex: 1;
+    min-width: 0;
+  }
+
   h2 {
     font-size: 26px;
     overflow-wrap: anywhere;
+  }
+
+  .sky {
+    display: grid;
+    justify-items: end;
+    text-align: right;
+    padding-top: 2px;
+  }
+
+  .temp {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font: 700 26px/1 var(--cond);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .gear {
+    margin-top: -4px;
   }
 
   .wind {

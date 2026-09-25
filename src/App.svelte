@@ -1,6 +1,7 @@
 <script>
   import { onMount } from 'svelte';
   import TabBar from './components/TabBar.svelte';
+  import WeatherDefs from './components/WeatherDefs.svelte';
   import ForecastView from './components/ForecastView.svelte';
   import SpotsView from './components/SpotsView.svelte';
   import SpotSettings from './components/SpotSettings.svelte';
@@ -65,6 +66,7 @@
 </main>
 
 <TabBar {tab} onchange={go} />
+<WeatherDefs />
 
 <style>
   .app {
